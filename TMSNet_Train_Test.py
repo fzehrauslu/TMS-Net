@@ -596,8 +596,8 @@ def CalculatePerformanceMetrics(opt,vect,batch,dice,Jaccard,hfDistance,ASSD,ImgN
     GTvect=np.reshape(GT.numpy(),(-1))
     
 
-    dice.append(dc(GTvect,vectBinarised))
-    Jaccard.append(jc(GTvect,vectBinarised))
+    dice.append(dc(vectBinarised,GTvect))
+    Jaccard.append(jc(vectBinarised,GTvect))
     
 
 
