@@ -1,1 +1,3 @@
-# TMS-Net
+This page presents the code for the design of TMS-Net (Trustworthy Multi-view Segmentation Network, see https://arxiv.org/abs/2212.10877) and its training. TMS-Net is a trustworthy segmentation network designed for 3D cardiac images. The network processes 2D slices sampled along the axial, sagittal and coronal views of a 3D MRI volume image by an allocated decoder for each view, by generating three segmentation volume masks for a single input volume. This design allows us to measure the confidence of the network on its outputs, with a cosine similarity metric.  We used computerised noise and Rician noise to evaluate how well this metric estimates the quality of a segmentation mask on run-time. 
+
+
