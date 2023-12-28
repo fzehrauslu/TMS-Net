@@ -2,3 +2,16 @@ This page presents the code for the design of TMS-Net (Trustworthy Multi-view Se
 
 
 PrepareMuitiviewImageDataset.ipynb jupyter notebook can be used to generate 2D multiview images(e.g sagittal) dataset from 3D images. MainFunction.ipynb can be used for training and evaluation TMS-Net. Please feel free to send any inqury about the code to fatmatulzehra.uslu@btu.edu.tr
+
+
+
+@article{uslu2023tms,
+  title={TMS-Net: A segmentation network coupled with a run-time quality control method for robust cardiac image segmentation},
+  author={Uslu, Fatmat{\"u}lzehra and Bharath, Anil A},
+  journal={Computers in Biology and Medicine},
+  volume={152},
+  pages={106422},
+  year={2023},
+  publisher={Elsevier}
+}
+
