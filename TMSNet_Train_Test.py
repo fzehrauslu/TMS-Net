@@ -86,6 +86,7 @@ def train(TranPara,opt,model,epoch,optimizer):
                 
             #######################
             if training_data_loader==TranPara.training_data_loader_All:
+                #pdb.set_trace()
                 prediction1,prediction2,prediction3 =model(input)
                 
                 if epoch ==0:
@@ -516,7 +517,7 @@ def NoisyInputGeneration(TranPara, opt,model, batch0_AA,batch1_AA,epsilon,output
 
                 perturbed_data[k,:,:,:]=fgsm_attack(input,target,model,epsilon)[0,:,:,:].detach()
             elif opt.AttackType=='IterativeFGSM':
-                perturbed_data[k,:,:,:]=IFGSM(input, target,model,TranPara.device,eps=eps,output=output)[0,:,:,:].detach()
+                perturbed_data[k,:,:,:]=IFGSM(input, target,model,TranPara.device,eps=epsilon,output=output)[0,:,:,:].detach()
 
                     
                 
@@ -596,8 +597,8 @@ def CalculatePerformanceMetrics(opt,vect,batch,dice,Jaccard,hfDistance,ASSD,ImgN
     GTvect=np.reshape(GT.numpy(),(-1))
     
 
-    dice.append(dc(vectBinarised,GTvect))
-    Jaccard.append(jc(vectBinarised,GTvect))
+    dice.append(dc(GTvect,vectBinarised))
+    Jaccard.append(jc(GTvect,vectBinarised))
     
 
 
