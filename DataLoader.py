@@ -260,10 +260,10 @@ class ReadTheDataset(data.Dataset):
         ############ test set ######################
 
         self.Images_3d = [x for x in sorted(listdir(join(image_dir,"images") )) if is_np_file(x) ] 
-        self.GTs_3d = [x for x in sorted(listdir(join(image_dir,"1st_manual") )) if is_np_file(x) ] 
+        self.GTs_3d = [x for x in sorted(listdir(join(image_dir,"GT") )) if is_np_file(x) ] 
         
         self.Images = [x for x in sorted(listdir(join(image_dir,"images") )) if is_png_image_file(x) ] 
-        self.GTs = [x for x in sorted(listdir(join(image_dir,"1st_manual") )) if is_png_image_file(x) ] 
+        self.GTs = [x for x in sorted(listdir(join(image_dir,"GT") )) if is_png_image_file(x) ] 
 
         
        
@@ -285,7 +285,7 @@ class ReadTheDataset(data.Dataset):
             self.GTs_3d.sort()
             self.Images_3d.sort()  
             
-            targets= np.load(join(self.image_dir,'1st_manual/',self.GTs_3d[index]))
+            targets= np.load(join(self.image_dir,'GT/',self.GTs_3d[index]))
             inputIms=np.load(join(self.image_dir,'images/',self.Images_3d[index])) 
                     
             
@@ -315,7 +315,7 @@ class ReadTheDataset(data.Dataset):
             self.Images.sort()
             
 
-            targets= load_img(join(self.image_dir,'1st_manual/',self.GTs[index]))
+            targets= load_img(join(self.image_dir,'GT/',self.GTs[index]))
             inputIms=load_img(join(self.image_dir,'images/',self.Images[index])) 
             
             targets=Normalise(targets)
@@ -341,7 +341,7 @@ class ReadTheDataset(data.Dataset):
             self.GTs.sort()
             self.Images.sort()      
             
-            targets= load_img(join(self.image_dir,'1st_manual/',self.GTs[index]))
+            targets= load_img(join(self.image_dir,'GT/',self.GTs[index]))
             inputIms=load_img(join(self.image_dir,'images/',self.Images[index])) 
             
             targets=Normalise(targets)
