@@ -34,6 +34,97 @@ import cv2
 from scipy import ndimage
 from skimage.filters import threshold_otsu
 
+def AddPaddingAndCrop(image,segmentation,ImgSize):
+    
+    image=np.float32(image)
+    segmentation=np.float32(segmentation)
+
+    
+    w=image.shape[0]
+    h=image.shape[1]
+    
+    
+    if w>ImgSize and h>ImgSize:
+        i=int((w-ImgSize)/2.)
+        j=int((h-ImgSize)/2.)
+
+
+        if image.ndim==3:
+            imageNew=image[i:i+ImgSize, j:j+ImgSize,:]
+            segmentationNew=segmentation[i:i+ImgSize, j:j+ImgSize,:]
+        elif image.ndim==2:
+
+            imageNew=image[i:i+ImgSize, j:j+ImgSize]
+            segmentationNew=segmentation[i:i+ImgSize, j:j+ImgSize]
+
+    elif h<ImgSize and w>ImgSize:
+        i=int((w-ImgSize)/2.)
+        j=int((-h+ImgSize)/2.)
+
+
+        if image.ndim==3:
+            imageNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+            segmentationNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+
+            imageNew[:,j:j+h,:]=image[i:i+ImgSize, :,:]
+            segmentationNew[:,j:j+h,:]=segmentation[i:i+ImgSize, :,:]
+        elif image.ndim==2:
+            imageNew=np.zeros((ImgSize,ImgSize))
+            #pdb.set_trace()
+            segmentationNew=np.zeros((ImgSize,ImgSize))
+            
+            imageNew[:,j:j+h]=image[i:i+ImgSize, :]
+            segmentationNew[:,j:j+h]=segmentation[i:i+ImgSize, :]
+        
+
+            
+    elif h>ImgSize and w<ImgSize:
+        i=int((-w+ImgSize)/2.)
+        j=int((+h-ImgSize)/2.)
+
+
+        if image.ndim==3:
+            imageNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+            segmentationNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+
+            imageNew[i:i+w,:,:]=image[:,j:j+ImgSize, :]
+            segmentationNew[i:i+w,:,:]=segmentation[:,j:j+ImgSize, :]
+        elif image.ndim==2:
+            imageNew=np.zeros((ImgSize,ImgSize))
+            #pdb.set_trace()
+            segmentationNew=np.zeros((ImgSize,ImgSize))
+            
+            imageNew[i:i+w,:]=image[:,j:j+ImgSize]
+            segmentationNew[i:i+w,:]=segmentation[:,j:j+ImgSize]
+        
+           
+    elif h<ImgSize and w<ImgSize:
+        i=int((-w+ImgSize)/2.)
+        j=int((-h+ImgSize)/2.)
+
+
+        if image.ndim==3:
+            imageNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+            segmentationNew=np.zeros((ImgSize,ImgSize,image.shape[-1]))
+
+            imageNew[i:i+w,j:j+h,:]=image#[:,:, :]
+            segmentationNew[i:i+w,j:j+h,:]=segmentation#[i:i+ImgSize,j:j+ImgSize, :]
+        elif image.ndim==2:
+            imageNew=np.zeros((ImgSize,ImgSize))
+            #pdb.set_trace()
+            segmentationNew=np.zeros((ImgSize,ImgSize))
+            
+            imageNew[i:i+w,j:j+h]=image#[i:i+ImgSize,j:j+ImgSize]
+            segmentationNew[i:i+w,j:j+h]=segmentation#[i:i+ImgSize,j:j+ImgSize]
+            
+    elif h==ImgSize and w==ImgSize:
+        
+            imageNew=image#[i:i+ImgSize,j:j+ImgSize]
+            segmentationNew=segmentation#[i:i+ImgSize,j:j+ImgSize]
+    
+    
+    return imageNew,segmentationNew
+
 
 import argparse
 
@@ -130,8 +221,8 @@ def ImageTransforms(image, segmentation,ImgSize=128, training=True):
     segmentation=np.array(segmentation)
     image=np.array(image)
         
- 
-    image,segmentation= CropCentre(image,segmentation,ImgSize)
+    image,segmentation=AddPaddingAndCrop(image,segmentation,ImgSize)
+    #image,segmentation= CropCentre(image,segmentation,ImgSize)
    
 
     if image.ndim==2:
@@ -187,7 +278,7 @@ class ReadTheDataset(data.Dataset):
     def __getitem__(self, index):
         
 
-        
+        #print(self.image_dir)
         if self.image_dir.endswith('test'):
 
             
@@ -231,17 +322,13 @@ class ReadTheDataset(data.Dataset):
             inputIms=Normalise(inputIms)              
 
             
-            inputIm2=torch.zeros((self.opt.InputSize,self.opt.InputSize))
-            targets2=torch.zeros((self.opt.InputSize,self.opt.InputSize))
                 
-            inputIm2,targets2=ImageTransforms(inputIms, targets,self.opt.InputSize, training=True)
+            inputIms,targets=ImageTransforms(inputIms, targets,self.opt.InputSize, training=True)
+            #print(inputIm.type())
+            
+            #inputIm,targets=AddPadding(inputIm,targets,self.opt.InputSize)
+            
 
-
-            del inputIms
-            del targets
-
-            inputIms=inputIm2
-            targets= targets2
             
             Names=self.GTs[index]
             cc=Names.split(".",2)[0]
@@ -263,12 +350,12 @@ class ReadTheDataset(data.Dataset):
             inputIm2=torch.zeros((self.opt.InputSize,self.opt.InputSize))
             targets2=torch.zeros((self.opt.InputSize,self.opt.InputSize))
                 
-            inputIm2,targets2=ImageTransforms(inputIms, targets,self.opt.InputSize, training=True)
+            inputIms,targets=ImageTransforms(inputIms, targets,self.opt.InputSize, training=False)
+            
+            #inputIm,targets=AddPadding(inputIm,targets,self.opt.InputSize)
 
 
 
-            inputIms=inputIm2
-            targets= targets2
             
             
             Names=self.GTs[index]
@@ -276,7 +363,7 @@ class ReadTheDataset(data.Dataset):
             view=cc.split("_",3)[1][0]
   
  
-
+        #print(inputIm.type())
         torch._assert( torch.max(targets)<1.01 , "target should be normalized")
         torch._assert( torch.max(inputIms)<1.01 , "input images should be normalized")
         
